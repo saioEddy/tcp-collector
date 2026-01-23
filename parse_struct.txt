@@ -1,0 +1,71 @@
+byte0	PT1
+byte1	
+byte2	
+byte3	
+byte4	PT2
+byte5	
+byte6	
+byte7	
+byte8	PT3
+byte9	
+byte10	
+byte11	
+byte12	PT4
+byte13	
+byte14	
+byte15	
+byte16	PT5
+byte17	
+byte18	
+byte19	
+byte20	PT6
+byte21	
+byte22	
+byte23	
+byte24	PT7
+byte25	
+byte26	
+byte27	
+byte28	PT8
+byte29	
+byte30	
+byte31	
+byte32	PT9
+byte33	
+byte34	
+byte35	
+byte36	PT10
+byte37	
+byte38	
+byte39	
+byte40	PT11
+byte41	
+byte42	
+byte43	
+byte44	PT12
+byte45	
+byte46	
+byte47	
+byte48	温度
+byte49	
+byte50	
+byte51	
+byte52	位移
+byte53	
+byte54	
+byte55	
+byte56	LS11
+byte57	LS21
+byte58	LS31
+byte59	LS11-1
+byte60	LS21-1
+byte61	LS31-1
+byte62	FS1-C1(高）
+byte63	FS1-C2(低）
+byte64	备用
+byte65	
+byte66	
+byte67	
+byte68	
+byte69	
+byte70	
