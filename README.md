@@ -22,12 +22,26 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/tcp-collector cmd/main.go
 - `tcp.device_ids`: 对应每个端口的设备ID
 - `kafka.brokers`: Kafka broker地址
 - `kafka.topic`: 数据推送的topic
+- `log.output`: 日志输出方式 (`console`/`file`/`both`)
+- `log.file_path`: 日志文件路径(当output为file或both时)
 
 ## 运行
 
 ```bash
 ./tcp-collector -config config.yaml
 ```
+
+## 日志文件
+
+日志输出位置由配置文件决定:
+- `console`: 仅输出到控制台
+- `file`: 仅输出到文件
+- `both`: 同时输出到控制台和文件(推荐)
+
+日志文件特性:
+- 自动轮转(按大小和天数)
+- 自动压缩历史日志
+- 默认路径: `/var/log/tcp-collector/collector.log`
 
 ## 数据格式
 

@@ -19,6 +19,8 @@ tcp-collector/
 ├── internal/
 │   ├── config/
 │   │   └── config.go           # 配置加载
+│   ├── logger/
+│   │   └── logger.go           # 日志管理器
 │   ├── parser/
 │   │   ├── field_def.go        # 字段定义常量
 │   │   ├── parser.go           # 数据解析器
@@ -60,7 +62,27 @@ tcp-collector/
 - `LoadConfig(path)`: 加载配置文件
 - `Validate()`: 验证配置有效性
 
-### 2. Parser模块 (`internal/parser`)
+### 2. Logger模块 (`internal/logger`)
+
+**功能**: 日志管理,支持控制台和文件输出
+
+**主要特性**:
+- 支持三种输出模式: `console`(仅控制台)、`file`(仅文件)、`both`(双输出)
+- 使用 `lumberjack` 实现日志轮转(按大小和天数)
+- 自动创建日志目录
+- 自动压缩旧日志文件
+
+**关键方法**:
+- `Init(cfg)`: 初始化日志系统
+- `createFileWriter(cfg)`: 创建带轮转的文件写入器
+
+**日志轮转配置**:
+- `max_size`: 单个日志文件最大大小(MB)
+- `max_days`: 日志文件保留天数
+- `max_backups`: 最多保留10个备份文件
+- 自动压缩历史日志
+
+### 3. Parser模块 (`internal/parser`)
 
 **功能**: 解析71字节数据帧
 
@@ -77,7 +99,7 @@ tcp-collector/
 - `parseFloat32(data)`: IEEE-754 32bit大端序解析
 - `parseUint16(data)`: 16bit大端序解析
 
-### 3. TCPServer模块 (`internal/tcpserver`)
+### 4. TCPServer模块 (`internal/tcpserver`)
 
 **功能**: TCP服务器,监听端口接收数据
 
@@ -98,7 +120,7 @@ tcp-collector/
 - `StartAll()`: 启动所有服务器
 - `StopAll()`: 停止所有服务器
 
-### 4. Kafka模块 (`internal/kafka`)
+### 5. Kafka模块 (`internal/kafka`)
 
 **功能**: Kafka生产者,推送数据
 

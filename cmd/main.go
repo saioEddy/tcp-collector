@@ -10,6 +10,7 @@ import (
 
 	"tcp-collector/internal/config"
 	"tcp-collector/internal/kafka"
+	"tcp-collector/internal/logger"
 	"tcp-collector/internal/parser"
 	"tcp-collector/internal/tcpserver"
 )
@@ -27,7 +28,13 @@ func main() {
 		log.Fatalf("Load config error: %v", err)
 	}
 
+	// 初始化日志
+	if err := logger.Init(&cfg.Log); err != nil {
+		log.Fatalf("Init logger error: %v", err)
+	}
+
 	log.Printf("Config loaded: %d TCP ports, Kafka brokers: %v", len(cfg.TCP.Ports), cfg.Kafka.Brokers)
+	log.Printf("Log config: level=%s, output=%s, file=%s", cfg.Log.Level, cfg.Log.Output, cfg.Log.FilePath)
 
 	// 创建解析器
 	dataParser := parser.NewParser()
