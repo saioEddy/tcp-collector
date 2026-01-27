@@ -40,9 +40,11 @@ log:
   # 日志级别: debug/info/warn/error
   level: "info"
   # 日志输出: console/file/both
-  output: "both"
+  # output: "both"                           # 本地调试时注释掉,避免写 /var/log 需要root
+  output: "console"                          # 本地调试: 只输出到终端
   # 日志文件路径(当output为file或both时)
-  file_path: "/var/log/tcp-collector/collector.log"
+  # file_path: "/var/log/tcp-collector/collector.log"  # 服务器部署时使用
+  file_path: "./collector.log"               # 本地调试: 写到当前目录
   # 日志文件最大大小(MB)
   max_size: 100
   # 日志文件保留天数

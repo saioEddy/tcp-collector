@@ -56,6 +56,13 @@ func main() {
 			return err
 		}
 
+		// 打印解析后的数据
+		log.Printf("[Handler] Parsed data: DeviceID=%s, Timestamp=%d, DataPoints=%d", 
+			parsed.DeviceID, parsed.Timestamp, len(parsed.Data))
+		for i, dp := range parsed.Data {
+			log.Printf("[Handler]   [%d] %s = %.2f", i+1, dp.Quota, dp.Value)
+		}
+
 		// 发送到Kafka
 		if err := kafkaProducer.Send(parsed); err != nil {
 			log.Printf("[Handler] Send to kafka error: %v", err)
