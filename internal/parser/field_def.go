@@ -52,8 +52,9 @@ var ParseStructFields = []FieldDef{
 	// FS1: 16位无符号整数,大端序(高字节+低字节)
 	{Name: "FS1", StartByte: 62, EndByte: 63, Type: FieldTypeUint16},
 
-	// 备用字段不解析
+	// 备用字段(64-69字节): 暂不解析,通常为保留字段或校验位
 }
 
 // FrameLength 数据帧长度(字节)
-const FrameLength = 71
+// 注意:实际有效数据到第63字节,总长度70字节(包含保留字段)
+const FrameLength = 70

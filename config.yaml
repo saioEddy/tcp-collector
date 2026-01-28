@@ -11,7 +11,7 @@ tcp:
     - "VKTCP-001"
     - "VKTCP-002"
   # 数据帧长度(字节)
-  frame_length: 71
+  frame_length: 70  # 修正:实际数据包是70字节,不是71字节
   # 读取超时时间(秒)
   read_timeout: 30
   # 连接空闲超时(秒)

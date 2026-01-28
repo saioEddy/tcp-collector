@@ -17,37 +17,55 @@ def uint16_to_bytes(value):
     return struct.pack('>H', value)
 
 def create_test_frame():
-    """创建测试数据帧(71字节)"""
-    frame = bytearray(71)
+    """创建测试数据帧(70字节)"""
+    # 原始代码(保留注释):
+    # frame = bytearray(70)
+    # 
+    # # PT1-PT12: 12个浮点数
+    # pt_values = [679.321, 480.0, 123.45, 234.56, 345.67, 456.78,
+    #              567.89, 678.90, 789.01, 890.12, 901.23, 12.34]
+    # 
+    # for i, value in enumerate(pt_values):
+    #     offset = i * 4
+    #     frame[offset:offset+4] = float_to_bytes(value)
+    # 
+    # # 温度 (byte48-51)
+    # frame[48:52] = float_to_bytes(25.5)
+    # 
+    # # 位移 (byte52-55)
+    # frame[52:56] = float_to_bytes(1.234)
+    # 
+    # # LS11-LS31-1 (byte56-61): 单字节值
+    # frame[56] = 1  # LS11
+    # frame[57] = 0  # LS21
+    # frame[58] = 1  # LS31
+    # frame[59] = 0  # LS11-1
+    # frame[60] = 1  # LS21-1
+    # frame[61] = 0  # LS31-1
+    # 
+    # # FS1 (byte62-63): 16bit整数
+    # frame[62:64] = uint16_to_bytes(12345)
+    # 
+    # # 备用字段(64-69)保持为0
+    # 
+    # return bytes(frame)
     
-    # PT1-PT12: 12个浮点数
-    pt_values = [679.321, 480.0, 123.45, 234.56, 345.67, 456.78,
-                 567.89, 678.90, 789.01, 890.12, 901.23, 12.34]
+    # 新代码: 使用真实采集卡的数据格式 (70字节)
+    # 数据来源: 网络调试助手截图
+    hex_bytes = [
+        0x41, 0xCA, 0xD4, 0x71, 0x41, 0x05, 0xA8, 0x71, 0x42, 0x47, 0x1A, 0xE4, 0x3F, 0x5F, 0x9C, 0x72,
+        0x3F, 0x3F, 0xB8, 0xE4, 0x41, 0xCA, 0xD7, 0x8E, 0x3E, 0x5E, 0x71, 0xC7, 0x3D, 0x2E, 0x38, 0xE3,
+        0x3E, 0x4A, 0x38, 0xE4, 0x41, 0xD5, 0x9F, 0x1D, 0x41, 0xD5, 0x5D, 0xC8, 0x41, 0x05, 0x38, 0x72,
+        0x41, 0x4C, 0x1B, 0xD9, 0x44, 0x94, 0x24, 0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00  # 移除了最后1个字节,改为70字节
+    ]
     
-    for i, value in enumerate(pt_values):
-        offset = i * 4
-        frame[offset:offset+4] = float_to_bytes(value)
+    frame = bytes(hex_bytes)
     
-    # 温度 (byte48-51)
-    frame[48:52] = float_to_bytes(25.5)
+    if len(frame) != 70:
+        print(f"警告: 数据长度为 {len(frame)} 字节,期望70字节")
     
-    # 位移 (byte52-55)
-    frame[52:56] = float_to_bytes(1.234)
-    
-    # LS11-LS31-1 (byte56-61): 单字节值
-    frame[56] = 1  # LS11
-    frame[57] = 0  # LS21
-    frame[58] = 1  # LS31
-    frame[59] = 0  # LS11-1
-    frame[60] = 1  # LS21-1
-    frame[61] = 0  # LS31-1
-    
-    # FS1 (byte62-63): 16bit整数
-    frame[62:64] = uint16_to_bytes(12345)
-    
-    # 备用字段保持为0
-    
-    return bytes(frame)
+    return frame
 
 def send_test_data(host, port, count=10, interval=1):
     """发送测试数据"""

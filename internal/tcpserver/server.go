@@ -172,8 +172,14 @@ func (s *Server) handleConnection(conn net.Conn) {
 		// 获取时间戳(毫秒)
 		timestamp := time.Now().UnixMilli()
 
+		// 【重要】复制数据,避免buffer被复用导致数据错乱
+		// 因为dataHandler可能是异步处理,如果直接传buffer引用,
+		// 下次循环会覆盖buffer内容,导致之前的数据被污染
+		dataCopy := make([]byte, n)
+		copy(dataCopy, buffer[:n])
+
 		// 处理数据
-		if err := s.dataHandler(s.deviceID, buffer, timestamp); err != nil {
+		if err := s.dataHandler(s.deviceID, dataCopy, timestamp); err != nil {
 			log.Printf("[TCP] Data handler error: %v", err)
 			// 不断开连接,继续处理下一帧
 		}
