@@ -10,6 +10,8 @@ const (
 	FieldTypeUint8
 	// FieldTypeUint16 16位无符号整数
 	FieldTypeUint16
+	// FieldTypeUint48 48位无符号整数(6字节,大端序)
+	FieldTypeUint48
 )
 
 // FieldDef 字段定义
@@ -49,10 +51,27 @@ var ParseStructFields = []FieldDef{
 	{Name: "LS21-1", StartByte: 60, EndByte: 60, Type: FieldTypeUint8},
 	{Name: "LS31-1", StartByte: 61, EndByte: 61, Type: FieldTypeUint8},
 
-	// FS1: 16位无符号整数,大端序(高字节+低字节)
-	{Name: "FS1", StartByte: 62, EndByte: 63, Type: FieldTypeUint16},
+	// FS1-C1/FS1-C2: FS1 的高/低字节(和“解析结构文件”保持一致)
+	// 注意：不要在字段表里同时定义 FS1(uint16) 和 FS1-C1/FS1-C2，
+	// 否则会对同一段字节重复解析/重复输出，容易引发下游歧义。
+	//
+	// 旧实现（合并成 uint16）保留注释，方便回滚对比：
+	// // FS1: 16位无符号整数,大端序(高字节+低字节)
+	// {Name: "FS1", StartByte: 62, EndByte: 63, Type: FieldTypeUint16},
+	{Name: "FS1-C1", StartByte: 62, EndByte: 62, Type: FieldTypeUint8},
+	{Name: "FS1-C2", StartByte: 63, EndByte: 63, Type: FieldTypeUint8},
 
-	// 备用字段(64-69字节): 暂不解析,通常为保留字段或校验位
+	// 备用字段(64-69字节): 在“解析结构文件”里标为一个整体字段
+	// 由于当前 DataPoint.Value 是 float64，这里把 6 字节按大端序编码成 uint48 输出（2^48 < 2^53，不会丢精度）
+	//
+	// 旧实现（按字节拆分）保留注释，方便对账：
+	// {Name: "备用64", StartByte: 64, EndByte: 64, Type: FieldTypeUint8},
+	// {Name: "备用65", StartByte: 65, EndByte: 65, Type: FieldTypeUint8},
+	// {Name: "备用66", StartByte: 66, EndByte: 66, Type: FieldTypeUint8},
+	// {Name: "备用67", StartByte: 67, EndByte: 67, Type: FieldTypeUint8},
+	// {Name: "备用68", StartByte: 68, EndByte: 68, Type: FieldTypeUint8},
+	// {Name: "备用69", StartByte: 69, EndByte: 69, Type: FieldTypeUint8},
+	{Name: "备用", StartByte: 64, EndByte: 69, Type: FieldTypeUint48},
 }
 
 // FrameLength 数据帧长度(字节)

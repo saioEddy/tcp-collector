@@ -43,7 +43,8 @@ func (p *Parser) Parse(data []byte, deviceID string, timestamp int64) (*ParsedDa
 	parsed := &ParsedData{
 		Timestamp: timestamp,
 		DeviceID:  deviceID,
-		Data:      make([]DataPoint, 0, len(p.fields)),
+		// 预留一点空间：字段解析 + 可能的合成字段（如 FS1）
+		Data: make([]DataPoint, 0, len(p.fields)+4),
 	}
 
 	for _, field := range p.fields {
@@ -58,6 +59,14 @@ func (p *Parser) Parse(data []byte, deviceID string, timestamp int64) (*ParsedDa
 		})
 	}
 
+	// 合成字段（已停用）：
+	// 你提供的“解析结构文件”里 FS1 明确拆成 FS1-C1/FS1-C2，
+	// 下游如果把 FS1 也当成独立指标，会产生重复字段/歧义，因此默认不再额外输出 FS1。
+	//
+	// 如确实需要兼容旧消费者，可恢复下面这段代码：
+	// fs1 := binary.BigEndian.Uint16(data[62:64]) // FS1 = C1(高) + C2(低)
+	// parsed.Data = append(parsed.Data, DataPoint{Quota: "FS1", Value: float64(fs1)})
+
 	return parsed, nil
 }
 
@@ -70,6 +79,8 @@ func (p *Parser) parseField(data []byte, field FieldDef) (float64, error) {
 		return float64(data[field.StartByte]), nil
 	case FieldTypeUint16:
 		return p.parseUint16(data[field.StartByte : field.EndByte+1])
+	case FieldTypeUint48:
+		return p.parseUint48(data[field.StartByte : field.EndByte+1])
 	default:
 		return 0, fmt.Errorf("unknown field type: %d", field.Type)
 	}
@@ -98,4 +109,18 @@ func (p *Parser) parseUint16(data []byte) (float64, error) {
 	// 大端序读取16位整数
 	value := binary.BigEndian.Uint16(data)
 	return float64(value), nil
+}
+
+// parseUint48 解析48位无符号整数(大端序)
+// 注意：返回 float64 不会丢精度，因为 uint48 < 2^53。
+func (p *Parser) parseUint48(data []byte) (float64, error) {
+	if len(data) != 6 {
+		return 0, fmt.Errorf("invalid uint48 data length: %d", len(data))
+	}
+
+	var v uint64
+	for i := 0; i < 6; i++ {
+		v = (v << 8) | uint64(data[i])
+	}
+	return float64(v), nil
 }
